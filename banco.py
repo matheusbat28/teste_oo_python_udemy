@@ -6,7 +6,6 @@ class Banco:
     def __init__(self):
         self._clientes = []
         self._contas = []
-        self._contaCliente = {} 
 
     @property
     def clientes(self):
@@ -33,22 +32,25 @@ class Banco:
         self.criarCliente(nome, idade)
         self.criarConta(tipo)
 
-    def criardict(self, dicionario ,chave, valor):
-        dicionario = dict(zip(chave, valor)).items()
-        return dicionario
 
-    def deposito(self, numero, valor):
-        contas = self.contas[numero]
+    def criardict(self, chave, valor):
+        return  dict(zip(chave, valor)).items()
+
+    def deposito(self, nome, valor):
+        contas = self.puxarContaCliente(nome)
         contas.depositar(valor)
+        return print(f'deposito de R$:{valor:.2f} com sucesso')
 
-    def sacar(self, numero, valor):
-        contas = self.contas[numero]
+    def sacar(self, nome, valor):
+        contas = self.puxarContaCliente(nome)
         contas.sacar(valor)
+        return print(f'saque de R$:{valor} com sucesso')
 
-    def limiteCC(self, numero, valor):
-        contas = self.contas[numero]
-        if type(contas) == ContaPoupanca:
-            contas.mudarlimite = valor
+
+    def limiteCC(self, nome, valor):
+        contas = self.puxarContaCliente(nome)
+        if type(contas) == ContasCorrente:
+            contas.mudarlimite(valor)
             return print('limite alterado')
         else:
              return print('essa conta não tem opção de limite')
@@ -67,27 +69,32 @@ class Banco:
                 break
 
     def puxarContaCliente(self, nome):
-        for i in self.clientes:       
-            if i.nome == nome:
-              print(self.clientes[i])  
-
-    def checarConta(self, numero):
+        cont = 0
+        for i in self.clientes:
+            if i.nome != nome:      
+                cont += 1  
+            elif i.nome == nome:
+                conta = self.contas[cont] 
+                return conta 
+                 
+    def checarConta(self, nome):
         for i in self.contas:
-            if i.numero == numero:
-                print(f'{numero} é desse banco ')
+            if self.puxarContaCliente(nome) in self.contas:
+                print(f'é desse banco ')
                 break
             else:
-                print(f'{numero} não é desse banco')
+                print(f'não é desse banco')
                 break
 
-
-    def relatorio(self, numero):
-        cliente = self.clientes[numero]
-        contas = self.contas[numero]
-        print(f'Cliente\n nome: {cliente.nome}\n idade: {cliente.idade}')
+    
+    def relatorio(self, nome):
+        contas = self.puxarContaCliente(nome)
+        for i in self.clientes:
+            index = self.clientes.index(i)
+        
+        print(f'Cliente\n nome: {self.clientes[index].nome}\n idade: {self.clientes[index].idade}')
         if type(contas) == ContasCorrente:
-            print(f'Conta\n agencia: {contas.agenica}\n numero: {contas.numero}\n saldo: {contas.saldo}\n limite: {contas.limite} ')
+            print(f'Conta\n agencia: {self.contas[index].agenica}\n numero: {self.contas[index].numero}\n saldo: {self.contas[index].saldo}\n limite: {self.contas[index].limite}')
         else:
-            print(f'Conta\n agencia: {contas.agenica}\n numero: {contas.numero}\n saldo: {contas.saldo}')
+             print(f'Conta\n agencia: {self.contas[index].agenica}\n numero: {self.contas[index].numero}\n saldo: {self.contas[index].saldo}')
  
-           
